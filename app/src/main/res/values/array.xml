@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <array name="download">
+        <item>下载</item>
+    </array>
+    <array name="download_many">
+        <item>获取章节列表</item>
+        <item>下载</item>
+    </array>
+</resources>
