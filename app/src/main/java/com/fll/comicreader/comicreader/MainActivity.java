@@ -9,9 +9,18 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.GridView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
+import android.view.ViewGroup.LayoutParams;
+
+import com.fll.comicreader.adaptor.SectionGridAdaptor;
+import com.fll.comicreader.dao.Section;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +41,8 @@ public class MainActivity extends Activity {
             switch (msg.what) {
                 case GOT_PAGELISTSTR:
                     String pageContent = (String) msg.obj;
-                    SectionParser.getSectionInfos(pageContent);
+                    List<Section> sectionList = SectionParser.getSectionInfos(pageContent);
+                    showPopupWindow(sectionList);
                     break;
                 case SHOW_LOADING:
                     pd1.show();
@@ -74,6 +84,31 @@ public class MainActivity extends Activity {
         });
         myWebView.loadUrl("http://3gmanhua.com/");
     }
+
+    private void showPopupWindow(List<Section> sectionList) {
+
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(this).inflate(
+                R.layout.section_grid, null);
+
+        final PopupWindow popupWindow = new PopupWindow(contentView,
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, true);
+
+        popupWindow.setTouchable(true);
+
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        // 我觉得这里是API的一个bug
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(
+                R.drawable.abc_ab_solid_dark_holo));
+        GridView gview = (GridView)popupWindow.getContentView().findViewById(R.id.section_gview);
+        SectionGridAdaptor sectionGridAdaptor = new SectionGridAdaptor(this,sectionList);
+        gview.setAdapter(sectionGridAdaptor);
+        Log.d(TAG,"show popup window");
+        // 设置好参数之后再show
+        popupWindow.showAsDropDown(myWebView);
+
+    }
+
 
     private void parseSectionList(final String currentPageAddr) {
         new Thread() {
