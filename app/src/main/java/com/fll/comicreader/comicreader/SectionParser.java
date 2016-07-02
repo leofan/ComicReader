@@ -1,10 +1,10 @@
 package com.fll.comicreader.comicreader;
 
-import android.os.Environment;
 import android.util.Log;
 
 import com.fll.comicreader.dao.Section;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,13 +16,19 @@ import java.util.regex.Pattern;
 public class SectionParser {
     private static final String TAG = SectionParser.class.getName();
 
-    public static List<Section> getSectionInfos(String listPage){
+    public static List<Section> getSectionInfos(String listPage) {
         List<Section> sections = new ArrayList<Section>();
+//        try {
+//            Downloader.saveTmpFile(listPage);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        //Log.d(TAG, String.format("listPage : %s", listPage));
         Matcher m = Pattern
                 .compile(
-                        "<a title=\".+?\" class=\"list_href\" rel=\"external\" href=\"(.+?)\">(.+?)</a>")
+                        "<a title *?= *?['\"].+?['\"] *?class *?= *?['\"]list_href['\"] *?rel *?= *?['\"]external['\"] *?href *?= *?['\"](.+?)['\"]>(.+?)</a>")
                 .matcher(listPage);
-
+//list_href
         while (m.find()) {
             Section oneSection = new Section();
             String url = m.group(1);
@@ -30,32 +36,34 @@ public class SectionParser {
             oneSection.setUrl(url);
             oneSection.setUrl(name);
             sections.add(oneSection);
-            Log.d(TAG,String.format("name:%s , url:%s",name,url));
+            Log.d(TAG, String.format("name:%s , url:%s", name, url));
         }
-        return  sections;
+        return sections;
     }
 
     /**
      * 判断是section page还是 section list page
+     *
      * @return
      */
-    public static boolean isSectionListPage(String url){
+    public static boolean isSectionListPage(String url) {
         return url.startsWith("http://3gmanhua.com/comic");
     }
 
     /**
      * 判断是section page还是 section list page
+     *
      * @return
      */
-    public static boolean isSectionPage(String url){
+    public static boolean isSectionPage(String url) {
         return url.startsWith("http://3gmanhua.com/vols");
     }
 
-    public static String getSecDestLocation(PageEle pageEle){
+    public static String getSecDestLocation(PageEle pageEle) {
         String subDir = "unknow";
         String title = pageEle.title;
-        if(title != null && title.length() > 0){
-            subDir = title.replaceAll(" ","/");
+        if (title != null && title.length() > 0) {
+            subDir = title.replaceAll(" ", "/");
         }
         return CommicConstants.ROOT_DICT + subDir + "/";
     }

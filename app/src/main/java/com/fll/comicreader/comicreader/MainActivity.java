@@ -221,7 +221,12 @@ public class MainActivity extends Activity {
                 }
 
             case KeyEvent.KEYCODE_BACK:
-                myWebView.goBack();
+                if(myWebView.canGoBack()){
+                    myWebView.goBack();
+                }else{
+                    return false;
+                }
+
         }
         return true;
     }

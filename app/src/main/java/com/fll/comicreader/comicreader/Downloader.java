@@ -1,5 +1,6 @@
 package com.fll.comicreader.comicreader;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -70,4 +71,16 @@ public class Downloader {
         return conn.getInputStream();
     }
 
+    public static void saveTmpFile(String content) throws IOException{
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/tmp.txt");
+        if (!file.exists()) {
+            file.createNewFile();
+        }else{
+
+        }
+        FileOutputStream fop = new FileOutputStream(file);
+        fop.write(content.getBytes());
+        fop.flush();
+        fop.close();
+    }
 }
